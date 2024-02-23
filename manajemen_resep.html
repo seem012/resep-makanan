@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manajemen Resep Masakan</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="">Danang pamungkas</a></li>
+        <li class="nav-right"><a href="index.html">Dashboard</a></li>
+        <li class="nav-right"><a href="manajemen_resep.html">manajemen resep</a></li>
+        <li class="nav-right"><a href="riwayat.html">Riwayat</a></li>
+      </ul>
+    </nav>
+    <div class="container">
+      <h1>Manajemen Resep Masakan</h1>
+      <!-- Form untuk menambahkan resep -->
+      <form id="addRecipeForm">
+        <label for="recipeName">Nama Resep:</label>
+        <input type="text" id="recipeName" name="recipeName" required />
+        <label for="ingredients">Bahan-bahan:</label>
+        <textarea id="ingredients" name="ingredients" required></textarea>
+        <label for="difficulty">Tingkat Kesulitan:</label>
+        <select id="difficulty" name="difficulty" required>
+          <option value="Mudah">Mudah</option>
+          <option value="Sedang">Sedang</option>
+          <option value="Sulit">Sulit</option>
+        </select>
+        <button type="submit">Tambah Resep</button>
+      </form>
+    </div>
+
+    <script>
+      // Fungsi untuk menambahkan resep ke localStorage bersama dengan timestamp
+      function addRecipeToStorage(recipe) {
+        let recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+        recipe.timestamp = new Date().getTime(); // Tambahkan timestamp dalam milidetik
+        recipes.push(recipe);
+        localStorage.setItem("recipes", JSON.stringify(recipes));
+      }
+
+      // Fungsi untuk menangani submit form tambah resep
+      document.getElementById("addRecipeForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const form = event.target;
+        const recipeName = form.recipeName.value;
+        const ingredients = form.ingredients.value;
+        const difficulty = form.difficulty.value;
+        const recipe = { name: recipeName, ingredients: ingredients, difficulty: difficulty };
+
+        addRecipeToStorage(recipe);
+
+        // Bersihkan formulir setelah resep ditambahkan
+        form.reset();
+
+        // Redirect ke halaman riwayat.html setelah menambah resep
+        window.location.href = "riwayat.html";
+      });
+    </script>
+  </body>
+</html>

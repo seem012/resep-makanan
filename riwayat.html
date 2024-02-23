@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riwayat Resep Masakan</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="">Danang pamungkas</a></li>
+        <li class="nav-right"><a href="index.html">Dashboard</a></li>
+        <li class="nav-right"><a href="manajemen_resep.html">Manajemen Resep</a></li>
+        <li class="nav-right"><a href="riwayat.html">Riwayat</a></li>
+      </ul>
+    </nav>
+    <div class="container">
+      <h1>Riwayat Resep Masakan</h1>
+
+      <table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama Resep</th>
+            <th>Tanggal</th>
+            <th>Hari</th>
+            <th>Waktu</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="historyTableBody">
+          <!-- Isi tabel akan ditambahkan secara dinamis oleh JavaScript -->
+        </tbody>
+      </table>
+      <button id="downloadButton">Download Semua Resep</button>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+      // Fungsi untuk menampilkan riwayat timestamp dalam bentuk tabel
+      function displayHistory() {
+        let recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+        let tableBody = document.getElementById("historyTableBody");
+
+        // Bersihkan isi tabel sebelum menambahkan data baru
+        tableBody.innerHTML = "";
+
+        // Loop melalui setiap resep dan tambahkan ke dalam tabel
+        recipes.forEach(function (recipe, index) {
+          let row = tableBody.insertRow();
+          let cellIndex = row.insertCell(0);
+          let cellRecipeName = row.insertCell(1);
+          let cellDate = row.insertCell(2);
+          let cellDay = row.insertCell(3);
+          let cellTime = row.insertCell(4);
+          let cellAction = row.insertCell(5);
+
+          cellIndex.innerHTML = index + 1;
+          cellRecipeName.innerHTML = recipe.name;
+          let timestamp = new Date(recipe.timestamp);
+          cellDate.innerHTML = timestamp.toLocaleDateString();
+          cellDay.innerHTML = getDayName(timestamp.getDay());
+          cellTime.innerHTML = formatTime(timestamp);
+
+          // Tombol hapus
+          let deleteButton = document.createElement("button");
+          deleteButton.innerHTML = "Hapus";
+          deleteButton.className = "btn-delete";
+          deleteButton.onclick = function () {
+            recipes.splice(index, 1);
+            localStorage.setItem("recipes", JSON.stringify(recipes));
+            displayHistory();
+          };
+          cellAction.appendChild(deleteButton);
+
+          // Tombol lihat bahan
+          let viewButton = document.createElement("button");
+          viewButton.innerHTML = "Lihat Bahan";
+          viewButton.className = "btn-view";
+          viewButton.onclick = function () {
+            let ingredients = recipe.ingredients.split("\n");
+            let ingredientList = "Bahan-bahan untuk resep " + recipe.name + ":\n";
+            ingredients.forEach(function (ingredient) {
+              ingredientList += "- " + ingredient.trim() + "\n";
+            });
+            alert(ingredientList);
+          };
+          cellAction.appendChild(viewButton);
+        });
+      }
+
+      // Fungsi untuk mendapatkan nama hari berdasarkan indeks
+      function getDayName(dayIndex) {
+        const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        return days[dayIndex];
+      }
+
+      // Fungsi untuk memformat waktu dalam format 24 jam
+      function formatTime(timestamp) {
+        let hours = timestamp.getHours();
+        let minutes = timestamp.getMinutes();
+        let formattedHours = hours < 10 ? "0" + hours : hours;
+        let formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+        return formattedHours + ":" + formattedMinutes;
+      }
+
+      // Panggil fungsi untuk menampilkan riwayat saat halaman dimuat
+      displayHistory();
+
+      // Fungsi untuk mendownload semua resep
+      document.getElementById("downloadButton").addEventListener("click", function () {
+        let recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+        let allRecipesText = "";
+
+        recipes.forEach(function (recipe, index) {
+          let recipeText = `Nama Resep: ${recipe.name}\n`;
+          recipeText += `Tanggal: ${new Date(recipe.timestamp).toLocaleDateString()}\n`;
+          recipeText += `Hari: ${getDayName(new Date(recipe.timestamp).getDay())}\n`;
+          recipeText += `Waktu: ${formatTime(new Date(recipe.timestamp))}\n\n`;
+          recipeText += `Bahan-bahan:\n${recipe.ingredients}\n\n`;
+
+          allRecipesText += recipeText;
+        });
+
+        const blob = new Blob([allRecipesText], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `all_recipes.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    </script>
+  </body>
+</html>

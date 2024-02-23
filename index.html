@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <style></style>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="">Danang pamungkas</a></li>
+        <li class="nav-right"><a href="index.html">Dashboard</a></li>
+        <li class="nav-right"><a href="manajemen_resep.html">manajemen resep</a></li>
+        <li class="nav-right"><a href="riwayat.html">Riwayat</a></li>
+      </ul>
+    </nav>
+    <div class="container">
+      <h1>Dashboard</h1>
+
+      <!-- Statistik Resep -->
+      <div class="statistics">
+        <h2>Statistik Resep</h2>
+        <table>
+          <tr>
+            <th>Jenis Resep</th>
+            <th>Jumlah</th>
+          </tr>
+          <tr>
+            <td>Mudah</td>
+            <td><span id="easyRecipeCount">0</span></td>
+          </tr>
+          <tr>
+            <td>Sedang</td>
+            <td><span id="mediumRecipeCount">0</span></td>
+          </tr>
+          <tr>
+            <td>Sulit</td>
+            <td><span id="hardRecipeCount">0</span></td>
+          </tr>
+          <tr>
+            <td>Total</td>
+            <td><span id="totalRecipeCount">0</span></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      // Fungsi untuk mendapatkan data resep dari localStorage
+      function getRecipesFromStorage() {
+        return JSON.parse(localStorage.getItem("recipes")) || [];
+      }
+
+      // Fungsi untuk menampilkan statistik resep
+      function displayRecipeStatistics() {
+        const recipes = getRecipesFromStorage();
+        const totalRecipeCount = recipes.length;
+        const easyRecipeCount = recipes.filter((recipe) => recipe.difficulty === "Mudah").length;
+        const mediumRecipeCount = recipes.filter((recipe) => recipe.difficulty === "Sedang").length;
+        const hardRecipeCount = recipes.filter((recipe) => recipe.difficulty === "Sulit").length;
+
+        document.getElementById("totalRecipeCount").textContent = totalRecipeCount;
+        document.getElementById("easyRecipeCount").textContent = easyRecipeCount;
+        document.getElementById("mediumRecipeCount").textContent = mediumRecipeCount;
+        document.getElementById("hardRecipeCount").textContent = hardRecipeCount;
+      }
+
+      // Panggil fungsi untuk menampilkan statistik resep saat halaman dimuat
+      displayRecipeStatistics();
+    </script>
+  </body>
+</html>
